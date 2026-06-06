@@ -1,0 +1,3 @@
+[submodule "resources/formalism"]
+	path = resources/formalism
+	url = git@github.com:JakubBlaha/pp1.git
