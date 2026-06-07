@@ -22,10 +22,12 @@ ev_entered_backup = Entity(
 )
 BACKUP = Entity(id="BACKUP", type=EntityType.VALUE)
 
+entities = [MastershipInfo, ev_received_mastership, Backup, ev_entered_backup, BACKUP]
+
 requirement = Requirement(
     id="Req08",
     flavour=Flavour.DISCRETE,
-    entities=[MastershipInfo, ev_received_mastership, Backup, ev_entered_backup, BACKUP],
+    entities=entities,
     constraint=Causes(
         cond=AllOf(items=[
             Happening(entity=ev_received_mastership, time=Now),
@@ -36,6 +38,9 @@ requirement = Requirement(
 )
 
 
+module = Module(entities=entities, requirements=[requirement])
+
+
 if __name__ == "__main__":
     import json
-    print(json.dumps(requirement.to_json(), indent=2))
+    print(json.dumps(module.to_json(), indent=2))

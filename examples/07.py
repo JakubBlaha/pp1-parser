@@ -17,10 +17,12 @@ ev_init_end = Entity(
     modifiers={"target": "initialization_end", "type": "generic"},
 )
 
+entities = [MODESET_TOPIC, ev_transmitted_modeset, initialization_end, ev_init_end]
+
 requirement = Requirement(
     id="Req07",
     flavour=Flavour.DISCRETE,
-    entities=[MODESET_TOPIC, ev_transmitted_modeset, initialization_end, ev_init_end],
+    entities=entities,
     constraint=Causes(
         cond=Happening(entity=ev_init_end, time=Now),
         effect=AllOf(items=[
@@ -31,6 +33,9 @@ requirement = Requirement(
 )
 
 
+module = Module(entities=entities, requirements=[requirement])
+
+
 if __name__ == "__main__":
     import json
-    print(json.dumps(requirement.to_json(), indent=2))
+    print(json.dumps(module.to_json(), indent=2))

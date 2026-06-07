@@ -1,0 +1,75 @@
+{
+  "entities": [
+    {
+      "id": "enter_emergency",
+      "type": "EventTrigger",
+      "modifiers": {}
+    },
+    {
+      "id": "ev_enter_emergency",
+      "type": "Event",
+      "modifiers": {
+        "target": "enter_emergency",
+        "type": "generic"
+      }
+    },
+    {
+      "id": "counter_1",
+      "type": "Signal",
+      "modifiers": {}
+    }
+  ],
+  "requirements": [
+    {
+      "id": "CustomCounter",
+      "flavour": "Discrete",
+      "entities": [
+        "enter_emergency",
+        "ev_enter_emergency",
+        "counter_1"
+      ],
+      "constraint": {
+        "node": "always",
+        "inner": {
+          "node": "implies",
+          "antecedent": {
+            "node": "has_happened",
+            "entity": "ev_enter_emergency",
+            "time": {
+              "node": "now"
+            }
+          },
+          "consequent": {
+            "node": "cmp",
+            "op": "=",
+            "lhs": {
+              "node": "val",
+              "entity": "counter_1",
+              "time": {
+                "node": "now"
+              }
+            },
+            "rhs": {
+              "node": "add",
+              "left": {
+                "node": "val",
+                "entity": "counter_1",
+                "time": {
+                  "node": "prev",
+                  "time": {
+                    "node": "now"
+                  }
+                }
+              },
+              "right": {
+                "node": "real",
+                "value": 3.0
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "test_cases": []
+}

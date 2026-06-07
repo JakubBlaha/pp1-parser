@@ -12,10 +12,12 @@ IVOR1 = Entity(id="IVOR1", type=EntityType.STORAGE, modifiers={"register": True}
 CriticalInput = Entity(id="CriticalInput", type=EntityType.STORAGE)
 MachineCheck = Entity(id="MachineCheck", type=EntityType.STORAGE)
 
+entities = [IVOR0, IVOR1, CriticalInput, MachineCheck]
+
 requirement = Requirement(
     id="Req04",
     flavour=Flavour.DISCRETE,
-    entities=[IVOR0, IVOR1, CriticalInput, MachineCheck],
+    entities=entities,
     constraint=Eventually(inner=AllOf(items=[
         Eq(Val(entity=IVOR0, time=Now), Addr(entity=CriticalInput)),
         Eq(Val(entity=IVOR1, time=Now), Addr(entity=MachineCheck)),
@@ -23,6 +25,9 @@ requirement = Requirement(
 )
 
 
+module = Module(entities=entities, requirements=[requirement])
+
+
 if __name__ == "__main__":
     import json
-    print(json.dumps(requirement.to_json(), indent=2))
+    print(json.dumps(module.to_json(), indent=2))

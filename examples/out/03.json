@@ -1,0 +1,97 @@
+{
+  "entities": [
+    {
+      "id": "calibration_const",
+      "type": "Storage",
+      "modifiers": {
+        "address": 2852126744
+      }
+    },
+    {
+      "id": "DTSCON",
+      "type": "Storage",
+      "modifiers": {
+        "register": true
+      }
+    },
+    {
+      "id": "ev_read_cc",
+      "type": "Event",
+      "modifiers": {
+        "target": "calibration_const",
+        "type": "read"
+      }
+    },
+    {
+      "id": "ev_written_dtscon",
+      "type": "Event",
+      "modifiers": {
+        "target": "DTSCON",
+        "type": "written"
+      }
+    }
+  ],
+  "requirements": [
+    {
+      "id": "Req03",
+      "flavour": "Discrete",
+      "entities": [
+        "calibration_const",
+        "DTSCON",
+        "ev_read_cc",
+        "ev_written_dtscon"
+      ],
+      "constraint": {
+        "node": "sequence",
+        "steps": [
+          {
+            "node": "happening",
+            "entity": "ev_read_cc",
+            "time": {
+              "node": "now"
+            }
+          },
+          {
+            "node": "all_of",
+            "items": [
+              {
+                "node": "happening",
+                "entity": "ev_written_dtscon",
+                "time": {
+                  "node": "now"
+                }
+              },
+              {
+                "node": "cmp",
+                "op": "=",
+                "lhs": {
+                  "node": "val",
+                  "entity": "DTSCON",
+                  "time": {
+                    "node": "now"
+                  }
+                },
+                "rhs": {
+                  "node": "val",
+                  "entity": "calibration_const",
+                  "time": {
+                    "node": "start",
+                    "interval": {
+                      "node": "last_occ",
+                      "event": "ev_read_cc",
+                      "time": {
+                        "node": "now"
+                      },
+                      "n": 1
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "test_cases": []
+}

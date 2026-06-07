@@ -27,10 +27,12 @@ ev_read_D = Entity(id="ev_read_D", type=EntityType.EVENT,
 regs = mkset(A, B, C, D)
 read_events = mkset(ev_read_A, ev_read_B, ev_read_C, ev_read_D)
 
+entities = [A, B, C, D, ev_read_A, ev_read_B, ev_read_C, ev_read_D]
+
 requirement = Requirement(
     id="Req13",
     flavour=Flavour.DISCRETE,
-    entities=[A, B, C, D, ev_read_A, ev_read_B, ev_read_C, ev_read_D],
+    entities=entities,
     constraint=Always(inner=Implies(
         antecedent=ForAll.of(read_events, lambda ev: Happening(entity=ev, time=Now)),
         consequent=Cmp(
@@ -42,6 +44,9 @@ requirement = Requirement(
 )
 
 
+module = Module(entities=entities, requirements=[requirement])
+
+
 if __name__ == "__main__":
     import json
-    print(json.dumps(requirement.to_json(), indent=2))
+    print(json.dumps(module.to_json(), indent=2))

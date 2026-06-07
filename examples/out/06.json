@@ -1,0 +1,61 @@
+{
+  "entities": [
+    {
+      "id": "processor_power_up",
+      "type": "EventTrigger",
+      "modifiers": {}
+    },
+    {
+      "id": "ev_power_up",
+      "type": "Event",
+      "modifiers": {
+        "target": "processor_power_up",
+        "type": "generic"
+      }
+    },
+    {
+      "id": "invoke_task_seq",
+      "type": "EventTrigger",
+      "modifiers": {}
+    },
+    {
+      "id": "ev_invoke_task_seq",
+      "type": "Event",
+      "modifiers": {
+        "target": "invoke_task_seq",
+        "type": "generic"
+      }
+    }
+  ],
+  "requirements": [
+    {
+      "id": "Req06",
+      "flavour": "Continuous",
+      "entities": [
+        "processor_power_up",
+        "ev_power_up",
+        "invoke_task_seq",
+        "ev_invoke_task_seq"
+      ],
+      "constraint": {
+        "node": "causes_within",
+        "cond": {
+          "node": "happening",
+          "entity": "ev_power_up",
+          "time": {
+            "node": "now"
+          }
+        },
+        "effect": {
+          "node": "happening",
+          "entity": "ev_invoke_task_seq",
+          "time": {
+            "node": "now"
+          }
+        },
+        "bound": 2.0
+      }
+    }
+  ],
+  "test_cases": []
+}

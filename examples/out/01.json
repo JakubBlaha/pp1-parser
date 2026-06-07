@@ -1,0 +1,145 @@
+{
+  "entities": [
+    {
+      "id": "EngagementNoSat_u",
+      "type": "Signal",
+      "modifiers": {}
+    },
+    {
+      "id": "Switch_b",
+      "type": "Signal",
+      "modifiers": {}
+    },
+    {
+      "id": "Lon_u",
+      "type": "Signal",
+      "modifiers": {}
+    }
+  ],
+  "requirements": [
+    {
+      "id": "Req01",
+      "flavour": "Discrete",
+      "entities": [
+        "EngagementNoSat_u",
+        "Switch_b",
+        "Lon_u"
+      ],
+      "constraint": {
+        "node": "trace_and",
+        "items": [
+          {
+            "node": "initial",
+            "inner": {
+              "node": "cmp",
+              "op": "=",
+              "lhs": {
+                "node": "val",
+                "entity": "EngagementNoSat_u",
+                "time": {
+                  "node": "real",
+                  "value": 0.0
+                }
+              },
+              "rhs": {
+                "node": "real",
+                "value": 0.0
+              }
+            }
+          },
+          {
+            "node": "always",
+            "inner": {
+              "node": "all_of",
+              "items": [
+                {
+                  "node": "implies",
+                  "antecedent": {
+                    "node": "cmp",
+                    "op": "=",
+                    "lhs": {
+                      "node": "val",
+                      "entity": "Switch_b",
+                      "time": {
+                        "node": "now"
+                      }
+                    },
+                    "rhs": {
+                      "node": "bool",
+                      "value": true
+                    }
+                  },
+                  "consequent": {
+                    "node": "cmp",
+                    "op": "=",
+                    "lhs": {
+                      "node": "val",
+                      "entity": "EngagementNoSat_u",
+                      "time": {
+                        "node": "now"
+                      }
+                    },
+                    "rhs": {
+                      "node": "mul",
+                      "left": {
+                        "node": "real",
+                        "value": 1.2
+                      },
+                      "right": {
+                        "node": "val",
+                        "entity": "EngagementNoSat_u",
+                        "time": {
+                          "node": "prev",
+                          "time": {
+                            "node": "now"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "node": "implies",
+                  "antecedent": {
+                    "node": "cmp",
+                    "op": "!=",
+                    "lhs": {
+                      "node": "val",
+                      "entity": "Switch_b",
+                      "time": {
+                        "node": "now"
+                      }
+                    },
+                    "rhs": {
+                      "node": "bool",
+                      "value": true
+                    }
+                  },
+                  "consequent": {
+                    "node": "cmp",
+                    "op": "=",
+                    "lhs": {
+                      "node": "val",
+                      "entity": "EngagementNoSat_u",
+                      "time": {
+                        "node": "now"
+                      }
+                    },
+                    "rhs": {
+                      "node": "val",
+                      "entity": "Lon_u",
+                      "time": {
+                        "node": "now"
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "test_cases": []
+}

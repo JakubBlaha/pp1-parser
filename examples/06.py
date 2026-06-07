@@ -20,10 +20,12 @@ ev_invoke_task_seq = Entity(
     modifiers={"target": "invoke_task_seq", "type": "generic"},
 )
 
+entities = [processor_power_up, ev_power_up, invoke_task_seq, ev_invoke_task_seq]
+
 requirement = Requirement(
     id="Req06",
     flavour=Flavour.CONTINUOUS,  # time unit: seconds
-    entities=[processor_power_up, ev_power_up, invoke_task_seq, ev_invoke_task_seq],
+    entities=entities,
     constraint=CausesWithin(
         cond=Happening(entity=ev_power_up, time=Now),
         effect=Happening(entity=ev_invoke_task_seq, time=Now),
@@ -32,6 +34,9 @@ requirement = Requirement(
 )
 
 
+module = Module(entities=entities, requirements=[requirement])
+
+
 if __name__ == "__main__":
     import json
-    print(json.dumps(requirement.to_json(), indent=2))
+    print(json.dumps(module.to_json(), indent=2))

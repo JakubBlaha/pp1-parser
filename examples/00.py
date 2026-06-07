@@ -13,10 +13,12 @@ ev_enter_emergency = Entity(
 )
 counter_1 = Entity(id="counter_1", type=EntityType.SIGNAL)
 
+entities = [enter_emergency, ev_enter_emergency, counter_1]
+
 requirement = Requirement(
     id="CustomCounter",
     flavour=Flavour.DISCRETE,
-    entities=[enter_emergency, ev_enter_emergency, counter_1],
+    entities=entities,
     constraint=Always(inner=Implies(
         antecedent=HasHappened(entity=ev_enter_emergency, time=Now),
         consequent=Eq(
@@ -27,6 +29,9 @@ requirement = Requirement(
 )
 
 
+module = Module(entities=entities, requirements=[requirement])
+
+
 if __name__ == "__main__":
     import json
-    print(json.dumps(requirement.to_json(), indent=2))
+    print(json.dumps(module.to_json(), indent=2))

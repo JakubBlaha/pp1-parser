@@ -39,13 +39,15 @@ t_mpd = Start(interval=LastOcc(event=ev_min_peak_det, time=Now, n=1))
 t_Mpd = Start(interval=LastOcc(event=ev_max_peak_det, time=Now, n=1))
 t_prevd = Start(interval=LastOcc(event=ev_written_d, time=Now, n=2))
 
+entities = [
+    d, valid_range, ev_written_d, ev_written_vr,
+    min_peak_det, ev_min_peak_det, max_peak_det, ev_max_peak_det,
+]
+
 requirement = Requirement(
     id="Req09",
     flavour=Flavour.CONTINUOUS,  # time unit: nanoseconds
-    entities=[
-        d, valid_range, ev_written_d, ev_written_vr,
-        min_peak_det, ev_min_peak_det, max_peak_det, ev_max_peak_det,
-    ],
+    entities=entities,
     constraint=CausesWithin(
         cond=AllOf(items=[
             Happening(entity=ev_written_d, time=Now),
@@ -68,6 +70,9 @@ requirement = Requirement(
 )
 
 
+module = Module(entities=entities, requirements=[requirement])
+
+
 if __name__ == "__main__":
     import json
-    print(json.dumps(requirement.to_json(), indent=2))
+    print(json.dumps(module.to_json(), indent=2))

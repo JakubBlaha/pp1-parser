@@ -1,0 +1,86 @@
+{
+  "entities": [
+    {
+      "id": "MastershipInfo",
+      "type": "Channel",
+      "modifiers": {}
+    },
+    {
+      "id": "ev_received_mastership",
+      "type": "Event",
+      "modifiers": {
+        "target": "MastershipInfo",
+        "type": "received"
+      }
+    },
+    {
+      "id": "Backup",
+      "type": "State",
+      "modifiers": {}
+    },
+    {
+      "id": "ev_entered_backup",
+      "type": "Event",
+      "modifiers": {
+        "target": "Backup",
+        "type": "entered"
+      }
+    },
+    {
+      "id": "BACKUP",
+      "type": "Value",
+      "modifiers": {}
+    }
+  ],
+  "requirements": [
+    {
+      "id": "Req08",
+      "flavour": "Discrete",
+      "entities": [
+        "MastershipInfo",
+        "ev_received_mastership",
+        "Backup",
+        "ev_entered_backup",
+        "BACKUP"
+      ],
+      "constraint": {
+        "node": "causes",
+        "cond": {
+          "node": "all_of",
+          "items": [
+            {
+              "node": "happening",
+              "entity": "ev_received_mastership",
+              "time": {
+                "node": "now"
+              }
+            },
+            {
+              "node": "cmp",
+              "op": "=",
+              "lhs": {
+                "node": "val",
+                "entity": "MastershipInfo",
+                "time": {
+                  "node": "now"
+                }
+              },
+              "rhs": {
+                "node": "entity_ref",
+                "entity": "BACKUP"
+              }
+            }
+          ]
+        },
+        "effect": {
+          "node": "happening",
+          "entity": "ev_entered_backup",
+          "time": {
+            "node": "now"
+          }
+        }
+      }
+    }
+  ],
+  "test_cases": []
+}

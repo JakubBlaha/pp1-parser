@@ -17,10 +17,12 @@ ev_reset = Entity(
     modifiers={"target": "reset", "type": "generic"},
 )
 
+entities = [max_exec_time_data, MEASUREMT_BLOCK, reset, ev_reset]
+
 requirement = Requirement(
     id="Req02",
     flavour=Flavour.DISCRETE,
-    entities=[max_exec_time_data, MEASUREMT_BLOCK, reset, ev_reset],
+    entities=entities,
     constraint=TAnd(items=[
         Eventually(inner=Eq(
             Val(entity=MEASUREMT_BLOCK, time=Now),
@@ -37,6 +39,9 @@ requirement = Requirement(
 )
 
 
+module = Module(entities=entities, requirements=[requirement])
+
+
 if __name__ == "__main__":
     import json
-    print(json.dumps(requirement.to_json(), indent=2))
+    print(json.dumps(module.to_json(), indent=2))

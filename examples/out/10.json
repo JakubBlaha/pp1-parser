@@ -1,0 +1,509 @@
+{
+  "entities": [
+    {
+      "id": "sensor_failure",
+      "type": "EventTrigger",
+      "modifiers": {}
+    },
+    {
+      "id": "ev_sensor_fail",
+      "type": "Event",
+      "modifiers": {
+        "target": "sensor_failure",
+        "type": "generic"
+      }
+    },
+    {
+      "id": "energy_failure",
+      "type": "EventTrigger",
+      "modifiers": {}
+    },
+    {
+      "id": "ev_energy_fail",
+      "type": "Event",
+      "modifiers": {
+        "target": "energy_failure",
+        "type": "generic"
+      }
+    },
+    {
+      "id": "comm_failure",
+      "type": "EventTrigger",
+      "modifiers": {}
+    },
+    {
+      "id": "ev_comm_fail",
+      "type": "Event",
+      "modifiers": {
+        "target": "comm_failure",
+        "type": "generic"
+      }
+    },
+    {
+      "id": "emergency_mode",
+      "type": "State",
+      "modifiers": {}
+    }
+  ],
+  "requirements": [
+    {
+      "id": "Req10",
+      "flavour": "Continuous",
+      "entities": [
+        "sensor_failure",
+        "ev_sensor_fail",
+        "energy_failure",
+        "ev_energy_fail",
+        "comm_failure",
+        "ev_comm_fail",
+        "emergency_mode"
+      ],
+      "constraint": {
+        "node": "causes",
+        "cond": {
+          "node": "any_of",
+          "items": [
+            {
+              "node": "all_of",
+              "items": [
+                {
+                  "node": "happening",
+                  "entity": "ev_sensor_fail",
+                  "time": {
+                    "node": "now"
+                  }
+                },
+                {
+                  "node": "cmp",
+                  "op": ">=",
+                  "lhs": {
+                    "node": "evt_occ_count",
+                    "event": "ev_sensor_fail",
+                    "interval": {
+                      "node": "mk_interval_oo",
+                      "start": {
+                        "node": "sub",
+                        "left": {
+                          "node": "now"
+                        },
+                        "right": {
+                          "node": "real",
+                          "value": 10.0
+                        }
+                      },
+                      "end": {
+                        "node": "now"
+                      }
+                    }
+                  },
+                  "rhs": {
+                    "node": "real",
+                    "value": 1.0
+                  }
+                }
+              ]
+            },
+            {
+              "node": "all_of",
+              "items": [
+                {
+                  "node": "happening",
+                  "entity": "ev_energy_fail",
+                  "time": {
+                    "node": "now"
+                  }
+                },
+                {
+                  "node": "cmp",
+                  "op": ">=",
+                  "lhs": {
+                    "node": "evt_occ_count",
+                    "event": "ev_energy_fail",
+                    "interval": {
+                      "node": "mk_interval_oo",
+                      "start": {
+                        "node": "sub",
+                        "left": {
+                          "node": "now"
+                        },
+                        "right": {
+                          "node": "real",
+                          "value": 10.0
+                        }
+                      },
+                      "end": {
+                        "node": "now"
+                      }
+                    }
+                  },
+                  "rhs": {
+                    "node": "real",
+                    "value": 1.0
+                  }
+                }
+              ]
+            },
+            {
+              "node": "all_of",
+              "items": [
+                {
+                  "node": "happening",
+                  "entity": "ev_comm_fail",
+                  "time": {
+                    "node": "now"
+                  }
+                },
+                {
+                  "node": "cmp",
+                  "op": ">=",
+                  "lhs": {
+                    "node": "evt_occ_count",
+                    "event": "ev_comm_fail",
+                    "interval": {
+                      "node": "mk_interval_oo",
+                      "start": {
+                        "node": "sub",
+                        "left": {
+                          "node": "now"
+                        },
+                        "right": {
+                          "node": "real",
+                          "value": 10.0
+                        }
+                      },
+                      "end": {
+                        "node": "now"
+                      }
+                    }
+                  },
+                  "rhs": {
+                    "node": "real",
+                    "value": 1.0
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        "effect": {
+          "node": "cmp",
+          "op": "=",
+          "lhs": {
+            "node": "val",
+            "entity": "emergency_mode",
+            "time": {
+              "node": "now"
+            }
+          },
+          "rhs": {
+            "node": "bool",
+            "value": true
+          }
+        }
+      }
+    }
+  ],
+  "test_cases": [
+    {
+      "id": "TC1",
+      "setup": {},
+      "stimuli": [],
+      "assertions": [
+        {
+          "time": 10.0,
+          "predicates": [
+            {
+              "node": "cmp",
+              "op": "!=",
+              "lhs": {
+                "node": "val",
+                "entity": "emergency_mode",
+                "time": {
+                  "node": "real",
+                  "value": 10.0
+                }
+              },
+              "rhs": {
+                "node": "bool",
+                "value": true
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "TC2",
+      "setup": {},
+      "stimuli": [
+        {
+          "node": "fire",
+          "time": 0.0,
+          "target": "sensor_failure"
+        },
+        {
+          "node": "fire",
+          "time": 9.0,
+          "target": "sensor_failure"
+        }
+      ],
+      "assertions": [
+        {
+          "time": 9.0,
+          "predicates": [
+            {
+              "node": "cmp",
+              "op": "=",
+              "lhs": {
+                "node": "val",
+                "entity": "emergency_mode",
+                "time": {
+                  "node": "real",
+                  "value": 9.0
+                }
+              },
+              "rhs": {
+                "node": "bool",
+                "value": true
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "TC3",
+      "setup": {},
+      "stimuli": [
+        {
+          "node": "fire",
+          "time": 0.0,
+          "target": "sensor_failure"
+        },
+        {
+          "node": "fire",
+          "time": 11.0,
+          "target": "sensor_failure"
+        }
+      ],
+      "assertions": [
+        {
+          "time": 11.0,
+          "predicates": [
+            {
+              "node": "cmp",
+              "op": "!=",
+              "lhs": {
+                "node": "val",
+                "entity": "emergency_mode",
+                "time": {
+                  "node": "real",
+                  "value": 11.0
+                }
+              },
+              "rhs": {
+                "node": "bool",
+                "value": true
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "TC4",
+      "setup": {},
+      "stimuli": [
+        {
+          "node": "fire",
+          "time": 0.0,
+          "target": "energy_failure"
+        },
+        {
+          "node": "fire",
+          "time": 9.0,
+          "target": "energy_failure"
+        }
+      ],
+      "assertions": [
+        {
+          "time": 9.0,
+          "predicates": [
+            {
+              "node": "cmp",
+              "op": "=",
+              "lhs": {
+                "node": "val",
+                "entity": "emergency_mode",
+                "time": {
+                  "node": "real",
+                  "value": 9.0
+                }
+              },
+              "rhs": {
+                "node": "bool",
+                "value": true
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "TC5",
+      "setup": {},
+      "stimuli": [
+        {
+          "node": "fire",
+          "time": 0.0,
+          "target": "energy_failure"
+        },
+        {
+          "node": "fire",
+          "time": 11.0,
+          "target": "energy_failure"
+        }
+      ],
+      "assertions": [
+        {
+          "time": 11.0,
+          "predicates": [
+            {
+              "node": "cmp",
+              "op": "!=",
+              "lhs": {
+                "node": "val",
+                "entity": "emergency_mode",
+                "time": {
+                  "node": "real",
+                  "value": 11.0
+                }
+              },
+              "rhs": {
+                "node": "bool",
+                "value": true
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "TC6",
+      "setup": {},
+      "stimuli": [
+        {
+          "node": "fire",
+          "time": 0.0,
+          "target": "comm_failure"
+        },
+        {
+          "node": "fire",
+          "time": 11.0,
+          "target": "comm_failure"
+        }
+      ],
+      "assertions": [
+        {
+          "time": 11.0,
+          "predicates": [
+            {
+              "node": "cmp",
+              "op": "!=",
+              "lhs": {
+                "node": "val",
+                "entity": "emergency_mode",
+                "time": {
+                  "node": "real",
+                  "value": 11.0
+                }
+              },
+              "rhs": {
+                "node": "bool",
+                "value": true
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "TC7",
+      "setup": {},
+      "stimuli": [
+        {
+          "node": "fire",
+          "time": 0.0,
+          "target": "energy_failure"
+        },
+        {
+          "node": "fire",
+          "time": 9.0,
+          "target": "comm_failure"
+        }
+      ],
+      "assertions": [
+        {
+          "time": 9.0,
+          "predicates": [
+            {
+              "node": "cmp",
+              "op": "!=",
+              "lhs": {
+                "node": "val",
+                "entity": "emergency_mode",
+                "time": {
+                  "node": "real",
+                  "value": 9.0
+                }
+              },
+              "rhs": {
+                "node": "bool",
+                "value": true
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "TC_MISSING",
+      "setup": {},
+      "stimuli": [
+        {
+          "node": "fire",
+          "time": 0.0,
+          "target": "comm_failure"
+        },
+        {
+          "node": "fire",
+          "time": 9.0,
+          "target": "comm_failure"
+        }
+      ],
+      "assertions": [
+        {
+          "time": 9.0,
+          "predicates": [
+            {
+              "node": "cmp",
+              "op": "=",
+              "lhs": {
+                "node": "val",
+                "entity": "emergency_mode",
+                "time": {
+                  "node": "real",
+                  "value": 9.0
+                }
+              },
+              "rhs": {
+                "node": "bool",
+                "value": true
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

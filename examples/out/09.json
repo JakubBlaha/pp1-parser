@@ -1,0 +1,215 @@
+{
+  "entities": [
+    {
+      "id": "d",
+      "type": "Signal",
+      "modifiers": {}
+    },
+    {
+      "id": "valid_range",
+      "type": "Signal",
+      "modifiers": {}
+    },
+    {
+      "id": "ev_written_d",
+      "type": "Event",
+      "modifiers": {
+        "target": "d",
+        "type": "written"
+      }
+    },
+    {
+      "id": "ev_written_vr",
+      "type": "Event",
+      "modifiers": {
+        "target": "valid_range",
+        "type": "written"
+      }
+    },
+    {
+      "id": "min_peak_det",
+      "type": "EventTrigger",
+      "modifiers": {}
+    },
+    {
+      "id": "ev_min_peak_det",
+      "type": "Event",
+      "modifiers": {
+        "target": "min_peak_det",
+        "type": "generic"
+      }
+    },
+    {
+      "id": "max_peak_det",
+      "type": "EventTrigger",
+      "modifiers": {}
+    },
+    {
+      "id": "ev_max_peak_det",
+      "type": "Event",
+      "modifiers": {
+        "target": "max_peak_det",
+        "type": "generic"
+      }
+    }
+  ],
+  "requirements": [
+    {
+      "id": "Req09",
+      "flavour": "Continuous",
+      "entities": [
+        "d",
+        "valid_range",
+        "ev_written_d",
+        "ev_written_vr",
+        "min_peak_det",
+        "ev_min_peak_det",
+        "max_peak_det",
+        "ev_max_peak_det"
+      ],
+      "constraint": {
+        "node": "causes_within",
+        "cond": {
+          "node": "all_of",
+          "items": [
+            {
+              "node": "happening",
+              "entity": "ev_written_d",
+              "time": {
+                "node": "now"
+              }
+            },
+            {
+              "node": "cmp",
+              "op": ">",
+              "lhs": {
+                "node": "sub",
+                "left": {
+                  "node": "val",
+                  "entity": "d",
+                  "time": {
+                    "node": "start",
+                    "interval": {
+                      "node": "last_occ",
+                      "event": "ev_max_peak_det",
+                      "time": {
+                        "node": "now"
+                      },
+                      "n": 1
+                    }
+                  }
+                },
+                "right": {
+                  "node": "val",
+                  "entity": "d",
+                  "time": {
+                    "node": "start",
+                    "interval": {
+                      "node": "last_occ",
+                      "event": "ev_min_peak_det",
+                      "time": {
+                        "node": "now"
+                      },
+                      "n": 1
+                    }
+                  }
+                }
+              },
+              "rhs": {
+                "node": "real",
+                "value": 655.0
+              }
+            },
+            {
+              "node": "cmp",
+              "op": "=",
+              "lhs": {
+                "node": "evt_occ_count",
+                "event": "ev_written_d",
+                "interval": {
+                  "node": "mk_interval_oc",
+                  "start": {
+                    "node": "start",
+                    "interval": {
+                      "node": "last_occ",
+                      "event": "ev_min_peak_det",
+                      "time": {
+                        "node": "now"
+                      },
+                      "n": 1
+                    }
+                  },
+                  "end": {
+                    "node": "now"
+                  }
+                }
+              },
+              "rhs": {
+                "node": "real",
+                "value": 2.0
+              }
+            },
+            {
+              "node": "cmp",
+              "op": ">",
+              "lhs": {
+                "node": "val",
+                "entity": "d",
+                "time": {
+                  "node": "now"
+                }
+              },
+              "rhs": {
+                "node": "val",
+                "entity": "d",
+                "time": {
+                  "node": "start",
+                  "interval": {
+                    "node": "last_occ",
+                    "event": "ev_written_d",
+                    "time": {
+                      "node": "now"
+                    },
+                    "n": 2
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "effect": {
+          "node": "all_of",
+          "items": [
+            {
+              "node": "happening",
+              "entity": "ev_written_vr",
+              "time": {
+                "node": "now"
+              }
+            },
+            {
+              "node": "cmp",
+              "op": "!=",
+              "lhs": {
+                "node": "val",
+                "entity": "valid_range",
+                "time": {
+                  "node": "now"
+                }
+              },
+              "rhs": {
+                "node": "val_before",
+                "entity": "valid_range",
+                "time": {
+                  "node": "now"
+                }
+              }
+            }
+          ]
+        },
+        "bound": 500.0
+      }
+    }
+  ],
+  "test_cases": []
+}

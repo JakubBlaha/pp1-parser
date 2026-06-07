@@ -1,0 +1,80 @@
+{
+  "entities": [
+    {
+      "id": "MODESET_TOPIC",
+      "type": "Channel",
+      "modifiers": {}
+    },
+    {
+      "id": "ev_transmitted_modeset",
+      "type": "Event",
+      "modifiers": {
+        "target": "MODESET_TOPIC",
+        "type": "transmitted"
+      }
+    },
+    {
+      "id": "initialization_end",
+      "type": "EventTrigger",
+      "modifiers": {}
+    },
+    {
+      "id": "ev_init_end",
+      "type": "Event",
+      "modifiers": {
+        "target": "initialization_end",
+        "type": "generic"
+      }
+    }
+  ],
+  "requirements": [
+    {
+      "id": "Req07",
+      "flavour": "Discrete",
+      "entities": [
+        "MODESET_TOPIC",
+        "ev_transmitted_modeset",
+        "initialization_end",
+        "ev_init_end"
+      ],
+      "constraint": {
+        "node": "causes",
+        "cond": {
+          "node": "happening",
+          "entity": "ev_init_end",
+          "time": {
+            "node": "now"
+          }
+        },
+        "effect": {
+          "node": "all_of",
+          "items": [
+            {
+              "node": "happening",
+              "entity": "ev_transmitted_modeset",
+              "time": {
+                "node": "now"
+              }
+            },
+            {
+              "node": "cmp",
+              "op": "=",
+              "lhs": {
+                "node": "val",
+                "entity": "MODESET_TOPIC",
+                "time": {
+                  "node": "now"
+                }
+              },
+              "rhs": {
+                "node": "bool",
+                "value": true
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "test_cases": []
+}

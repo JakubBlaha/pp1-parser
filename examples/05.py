@@ -34,13 +34,15 @@ ev_hold_exec = Entity(
     modifiers={"target": "hold_exec", "type": "generic"},
 )
 
+entities = [
+    SRR0, R5, ev_written_r5, exception, ev_exception,
+    invoke_ieh, ev_invoke_ieh, return_ieh, ev_return_ieh, hold_exec, ev_hold_exec,
+]
+
 requirement = Requirement(
     id="Req05",
     flavour=Flavour.DISCRETE,
-    entities=[
-        SRR0, R5, ev_written_r5, exception, ev_exception,
-        invoke_ieh, ev_invoke_ieh, return_ieh, ev_return_ieh, hold_exec, ev_hold_exec,
-    ],
+    entities=entities,
     constraint=TAnd(items=[
         Sequence(steps=[
             Happening(entity=ev_exception, time=Now),
@@ -58,6 +60,9 @@ requirement = Requirement(
 )
 
 
+module = Module(entities=entities, requirements=[requirement])
+
+
 if __name__ == "__main__":
     import json
-    print(json.dumps(requirement.to_json(), indent=2))
+    print(json.dumps(module.to_json(), indent=2))

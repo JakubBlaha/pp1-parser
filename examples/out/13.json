@@ -1,0 +1,176 @@
+{
+  "entities": [
+    {
+      "id": "A",
+      "type": "Storage",
+      "modifiers": {
+        "register": true
+      }
+    },
+    {
+      "id": "B",
+      "type": "Storage",
+      "modifiers": {
+        "register": true
+      }
+    },
+    {
+      "id": "C",
+      "type": "Storage",
+      "modifiers": {
+        "register": true
+      }
+    },
+    {
+      "id": "D",
+      "type": "Storage",
+      "modifiers": {
+        "register": true
+      }
+    },
+    {
+      "id": "ev_read_A",
+      "type": "Event",
+      "modifiers": {
+        "target": "A",
+        "type": "read"
+      }
+    },
+    {
+      "id": "ev_read_B",
+      "type": "Event",
+      "modifiers": {
+        "target": "B",
+        "type": "read"
+      }
+    },
+    {
+      "id": "ev_read_C",
+      "type": "Event",
+      "modifiers": {
+        "target": "C",
+        "type": "read"
+      }
+    },
+    {
+      "id": "ev_read_D",
+      "type": "Event",
+      "modifiers": {
+        "target": "D",
+        "type": "read"
+      }
+    }
+  ],
+  "requirements": [
+    {
+      "id": "Req13",
+      "flavour": "Discrete",
+      "entities": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "ev_read_A",
+        "ev_read_B",
+        "ev_read_C",
+        "ev_read_D"
+      ],
+      "constraint": {
+        "node": "always",
+        "inner": {
+          "node": "implies",
+          "antecedent": {
+            "node": "for_all",
+            "domain": {
+              "node": "set",
+              "elements": [
+                {
+                  "node": "entity_ref",
+                  "entity": "ev_read_A"
+                },
+                {
+                  "node": "entity_ref",
+                  "entity": "ev_read_B"
+                },
+                {
+                  "node": "entity_ref",
+                  "entity": "ev_read_C"
+                },
+                {
+                  "node": "entity_ref",
+                  "entity": "ev_read_D"
+                }
+              ]
+            },
+            "var": "x",
+            "body": {
+              "node": "happening",
+              "entity": {
+                "node": "var",
+                "name": "x"
+              },
+              "time": {
+                "node": "now"
+              }
+            }
+          },
+          "consequent": {
+            "node": "cmp",
+            "op": "<=",
+            "lhs": {
+              "node": "size",
+              "set": {
+                "node": "filter",
+                "set": {
+                  "node": "set",
+                  "elements": [
+                    {
+                      "node": "entity_ref",
+                      "entity": "A"
+                    },
+                    {
+                      "node": "entity_ref",
+                      "entity": "B"
+                    },
+                    {
+                      "node": "entity_ref",
+                      "entity": "C"
+                    },
+                    {
+                      "node": "entity_ref",
+                      "entity": "D"
+                    }
+                  ]
+                },
+                "var": "x",
+                "body": {
+                  "node": "cmp",
+                  "op": ">",
+                  "lhs": {
+                    "node": "val",
+                    "entity": {
+                      "node": "var",
+                      "name": "x"
+                    },
+                    "time": {
+                      "node": "now"
+                    }
+                  },
+                  "rhs": {
+                    "node": "real",
+                    "value": 10.0
+                  }
+                }
+              }
+            },
+            "rhs": {
+              "node": "real",
+              "value": 2.0
+            }
+          }
+        }
+      }
+    }
+  ],
+  "test_cases": []
+}

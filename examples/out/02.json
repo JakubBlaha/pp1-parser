@@ -1,0 +1,102 @@
+{
+  "entities": [
+    {
+      "id": "max_exec_time_data",
+      "type": "Abstract",
+      "modifiers": {}
+    },
+    {
+      "id": "MEASUREMT_BLOCK",
+      "type": "Storage",
+      "modifiers": {
+        "non_volatile": true
+      }
+    },
+    {
+      "id": "reset",
+      "type": "EventTrigger",
+      "modifiers": {}
+    },
+    {
+      "id": "ev_reset",
+      "type": "Event",
+      "modifiers": {
+        "target": "reset",
+        "type": "generic"
+      }
+    }
+  ],
+  "requirements": [
+    {
+      "id": "Req02",
+      "flavour": "Discrete",
+      "entities": [
+        "max_exec_time_data",
+        "MEASUREMT_BLOCK",
+        "reset",
+        "ev_reset"
+      ],
+      "constraint": {
+        "node": "trace_and",
+        "items": [
+          {
+            "node": "eventually",
+            "inner": {
+              "node": "cmp",
+              "op": "=",
+              "lhs": {
+                "node": "val",
+                "entity": "MEASUREMT_BLOCK",
+                "time": {
+                  "node": "now"
+                }
+              },
+              "rhs": {
+                "node": "val",
+                "entity": "max_exec_time_data",
+                "time": {
+                  "node": "now"
+                }
+              }
+            }
+          },
+          {
+            "node": "always",
+            "inner": {
+              "node": "implies",
+              "antecedent": {
+                "node": "happening",
+                "entity": "ev_reset",
+                "time": {
+                  "node": "now"
+                }
+              },
+              "consequent": {
+                "node": "cmp",
+                "op": "=",
+                "lhs": {
+                  "node": "val",
+                  "entity": "MEASUREMT_BLOCK",
+                  "time": {
+                    "node": "next",
+                    "time": {
+                      "node": "now"
+                    }
+                  }
+                },
+                "rhs": {
+                  "node": "val_before",
+                  "entity": "MEASUREMT_BLOCK",
+                  "time": {
+                    "node": "now"
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "test_cases": []
+}

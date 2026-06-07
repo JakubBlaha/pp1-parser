@@ -21,10 +21,12 @@ ev_written_dtscon = Entity(
     modifiers={"target": "DTSCON", "type": "written"},
 )
 
+entities = [calibration_const, DTSCON, ev_read_cc, ev_written_dtscon]
+
 requirement = Requirement(
     id="Req03",
     flavour=Flavour.DISCRETE,
-    entities=[calibration_const, DTSCON, ev_read_cc, ev_written_dtscon],
+    entities=entities,
     constraint=Sequence(steps=[
         Happening(entity=ev_read_cc, time=Now),
         AllOf(items=[
@@ -41,6 +43,9 @@ requirement = Requirement(
 )
 
 
+module = Module(entities=entities, requirements=[requirement])
+
+
 if __name__ == "__main__":
     import json
-    print(json.dumps(requirement.to_json(), indent=2))
+    print(json.dumps(module.to_json(), indent=2))

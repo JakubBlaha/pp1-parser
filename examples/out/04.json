@@ -1,0 +1,79 @@
+{
+  "entities": [
+    {
+      "id": "IVOR0",
+      "type": "Storage",
+      "modifiers": {
+        "register": true
+      }
+    },
+    {
+      "id": "IVOR1",
+      "type": "Storage",
+      "modifiers": {
+        "register": true
+      }
+    },
+    {
+      "id": "CriticalInput",
+      "type": "Storage",
+      "modifiers": {}
+    },
+    {
+      "id": "MachineCheck",
+      "type": "Storage",
+      "modifiers": {}
+    }
+  ],
+  "requirements": [
+    {
+      "id": "Req04",
+      "flavour": "Discrete",
+      "entities": [
+        "IVOR0",
+        "IVOR1",
+        "CriticalInput",
+        "MachineCheck"
+      ],
+      "constraint": {
+        "node": "eventually",
+        "inner": {
+          "node": "all_of",
+          "items": [
+            {
+              "node": "cmp",
+              "op": "=",
+              "lhs": {
+                "node": "val",
+                "entity": "IVOR0",
+                "time": {
+                  "node": "now"
+                }
+              },
+              "rhs": {
+                "node": "addr",
+                "entity": "CriticalInput"
+              }
+            },
+            {
+              "node": "cmp",
+              "op": "=",
+              "lhs": {
+                "node": "val",
+                "entity": "IVOR1",
+                "time": {
+                  "node": "now"
+                }
+              },
+              "rhs": {
+                "node": "addr",
+                "entity": "MachineCheck"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "test_cases": []
+}

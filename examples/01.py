@@ -11,10 +11,12 @@ EngagementNoSat_u = Entity(id="EngagementNoSat_u", type=EntityType.SIGNAL)
 Switch_b = Entity(id="Switch_b", type=EntityType.SIGNAL)
 Lon_u = Entity(id="Lon_u", type=EntityType.SIGNAL)
 
+entities = [EngagementNoSat_u, Switch_b, Lon_u]
+
 requirement = Requirement(
     id="Req01",
     flavour=Flavour.DISCRETE,
-    entities=[EngagementNoSat_u, Switch_b, Lon_u],
+    entities=entities,
     constraint=TAnd(items=[
         Initial(inner=Eq(Val(entity=EngagementNoSat_u, time=0), 0)),
         Always(inner=AllOf(items=[
@@ -37,6 +39,9 @@ requirement = Requirement(
 )
 
 
+module = Module(entities=entities, requirements=[requirement])
+
+
 if __name__ == "__main__":
     import json
-    print(json.dumps(requirement.to_json(), indent=2))
+    print(json.dumps(module.to_json(), indent=2))

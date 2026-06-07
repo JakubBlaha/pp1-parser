@@ -1,0 +1,169 @@
+{
+  "entities": [
+    {
+      "id": "SRR0",
+      "type": "Storage",
+      "modifiers": {
+        "register": true
+      }
+    },
+    {
+      "id": "R5",
+      "type": "Storage",
+      "modifiers": {
+        "register": true
+      }
+    },
+    {
+      "id": "ev_written_r5",
+      "type": "Event",
+      "modifiers": {
+        "target": "R5",
+        "type": "written"
+      }
+    },
+    {
+      "id": "exception",
+      "type": "EventTrigger",
+      "modifiers": {}
+    },
+    {
+      "id": "ev_exception",
+      "type": "Event",
+      "modifiers": {
+        "target": "exception",
+        "type": "generic"
+      }
+    },
+    {
+      "id": "invoke_ieh",
+      "type": "EventTrigger",
+      "modifiers": {}
+    },
+    {
+      "id": "ev_invoke_ieh",
+      "type": "Event",
+      "modifiers": {
+        "target": "invoke_ieh",
+        "type": "generic"
+      }
+    },
+    {
+      "id": "return_ieh",
+      "type": "EventTrigger",
+      "modifiers": {}
+    },
+    {
+      "id": "ev_return_ieh",
+      "type": "Event",
+      "modifiers": {
+        "target": "return_ieh",
+        "type": "generic"
+      }
+    },
+    {
+      "id": "hold_exec",
+      "type": "EventTrigger",
+      "modifiers": {}
+    },
+    {
+      "id": "ev_hold_exec",
+      "type": "Event",
+      "modifiers": {
+        "target": "hold_exec",
+        "type": "generic"
+      }
+    }
+  ],
+  "requirements": [
+    {
+      "id": "Req05",
+      "flavour": "Discrete",
+      "entities": [
+        "SRR0",
+        "R5",
+        "ev_written_r5",
+        "exception",
+        "ev_exception",
+        "invoke_ieh",
+        "ev_invoke_ieh",
+        "return_ieh",
+        "ev_return_ieh",
+        "hold_exec",
+        "ev_hold_exec"
+      ],
+      "constraint": {
+        "node": "trace_and",
+        "items": [
+          {
+            "node": "sequence",
+            "steps": [
+              {
+                "node": "happening",
+                "entity": "ev_exception",
+                "time": {
+                  "node": "now"
+                }
+              },
+              {
+                "node": "all_of",
+                "items": [
+                  {
+                    "node": "happening",
+                    "entity": "ev_written_r5",
+                    "time": {
+                      "node": "now"
+                    }
+                  },
+                  {
+                    "node": "cmp",
+                    "op": "=",
+                    "lhs": {
+                      "node": "val",
+                      "entity": "R5",
+                      "time": {
+                        "node": "now"
+                      }
+                    },
+                    "rhs": {
+                      "node": "val",
+                      "entity": "SRR0",
+                      "time": {
+                        "node": "now"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "node": "happening",
+                "entity": "ev_invoke_ieh",
+                "time": {
+                  "node": "now"
+                }
+              }
+            ]
+          },
+          {
+            "node": "causes",
+            "cond": {
+              "node": "happening",
+              "entity": "ev_return_ieh",
+              "time": {
+                "node": "now"
+              }
+            },
+            "effect": {
+              "node": "happening",
+              "entity": "ev_hold_exec",
+              "time": {
+                "node": "now"
+              }
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "test_cases": []
+}
