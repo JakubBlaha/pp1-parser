@@ -76,9 +76,28 @@ Requirement.model_validate(req.to_json())   # parse it back
 Requirement.model_json_schema()      # JSON Schema for the format
 ```
 
+## Command-line tool
+
+The `verifier` console script parses an input `.py` file (one that builds a
+top-level `module` with the DSL), validates it, and prints the canonical JSON.
+A malformed definition is reported and exits non-zero.
+
+```bash
+verifier examples/07.py              # canonical JSON to stdout
+verifier examples/10.py -o 10.json   # ... or to a file
+python -m verifier examples/07.py    # equivalent, without the console script
+```
+
+Exit codes: `0` valid, `1` invalid / no top-level `module` found, `2` missing file.
+
+> The input file is executed as Python, so only run files you trust.
+
 ## Running the examples
 
 ```bash
 # Print one example's canonical JSON
 python examples/07.py
+
+# Dump every example's JSON into examples/out/
+python examples/run_all.py
 ```
