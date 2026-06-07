@@ -85,6 +85,7 @@ A malformed definition is reported and exits non-zero.
 ```bash
 verifier examples/07.py              # canonical JSON to stdout
 verifier examples/10.py -o 10.json   # ... or to a file
+cat examples/07.py | verifier        # read source from stdin (omit the arg, or pass '-')
 python -m verifier examples/07.py    # equivalent, without the console script
 ```
 

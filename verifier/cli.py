@@ -1,27 +1,28 @@
 """Command-line interface for the verifier.
 
-Loads an input ``.py`` file that builds a top-level ``module`` (a ``Module``)
-with the DSL, validates it, and prints the canonical JSON. Validation happens
-when the file constructs its Pydantic nodes; a malformed definition raises and
-is reported with a non-zero exit code.
+Reads DSL source that builds a top-level ``module`` (a ``Module``) -- from a
+file argument, or from stdin when the argument is omitted or given as ``-`` --
+validates it, and prints the canonical JSON. Validation happens when the source
+constructs its Pydantic nodes; a malformed definition raises and is reported
+with a non-zero exit code.
 
 Note: the input file is executed as Python, so only run files you trust.
 """
 
 import argparse
-import importlib.util
 import json
 import sys
+import types
 from pathlib import Path
 
 from pydantic import BaseModel, ValidationError
 
 
-def _load(path: Path):
-    """Execute the input file in an isolated module namespace."""
-    spec = importlib.util.spec_from_file_location(f"_verifier_input_{path.stem}", path)
-    mod = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(mod)
+def _exec_source(source: str, origin: str):
+    """Execute DSL source in an isolated module namespace and return it."""
+    mod = types.ModuleType("_verifier_input")
+    mod.__file__ = origin
+    exec(compile(source, origin, "exec"), mod.__dict__)
     return mod
 
 
@@ -43,8 +44,9 @@ def main(argv=None) -> int:
         "and emit its canonical JSON.",
     )
     parser.add_argument(
-        "input", type=Path,
-        help="Path to a Python file defining a `module` or `requirement`.",
+        "input", type=Path, nargs="?", default=None,
+        help="Python file defining a top-level `module`. Reads from stdin if "
+        "omitted or given as '-'.",
     )
     parser.add_argument(
         "-o", "--output", type=Path, default=None,
@@ -53,24 +55,29 @@ def main(argv=None) -> int:
     parser.add_argument("--indent", type=int, default=2, help="JSON indent (default: 2).")
     args = parser.parse_args(argv)
 
-    if not args.input.is_file():
+    # Resolve the source: a file, or stdin when omitted / given as '-'.
+    if args.input is None or str(args.input) == "-":
+        source, origin = sys.stdin.read(), "<stdin>"
+    elif args.input.is_file():
+        source, origin = args.input.read_text(), str(args.input)
+    else:
         print(f"error: no such file: {args.input}", file=sys.stderr)
         return 2
 
-    # Load + construct the definitions; this is where validation happens.
+    # Execute + construct the definitions; this is where validation happens.
     try:
-        mod = _load(args.input)
+        mod = _exec_source(source, origin)
     except ValidationError as e:
-        print(f"invalid: {args.input} failed validation:\n{e}", file=sys.stderr)
+        print(f"invalid: {origin} failed validation:\n{e}", file=sys.stderr)
         return 1
     except Exception as e:  # noqa: BLE001 -- surface any load/build failure to the user
-        print(f"error: failed to load {args.input}: {e}", file=sys.stderr)
+        print(f"error: failed to load {origin}: {e}", file=sys.stderr)
         return 1
 
     obj = _extract(mod)
     if obj is None:
         print(
-            f"error: {args.input} defines no top-level `module` "
+            f"error: {origin} defines no top-level `module` "
             f"(wrap your requirement(s) in a Module)",
             file=sys.stderr,
         )
@@ -81,7 +88,7 @@ def main(argv=None) -> int:
         data = obj.to_json()
         type(obj).model_validate(data)
     except ValidationError as e:
-        print(f"invalid: {args.input} is not a valid definition:\n{e}", file=sys.stderr)
+        print(f"invalid: {origin} is not a valid definition:\n{e}", file=sys.stderr)
         return 1
 
     text = json.dumps(data, indent=args.indent)
