@@ -105,94 +105,125 @@ def test_well_typed_is_accepted(build):
 
 
 # ---------------------------------------------------------------------------
-# Semantic type rules the verifier does NOT yet enforce (xfail, strict).
-# Each asserts the spec-correct outcome: a ValidationError.
+# Semantic type rules, enforced by the verifier's validation pass.
+# Each wraps the ill-typed snippet in a minimal module and asserts the pass
+# rejects it (InvalidModule). These need context (entity table / flavour) that
+# a single node cannot check at construction.
 # ---------------------------------------------------------------------------
 
 
-@pytest.mark.xfail(reason="arithmetic operands are not checked to be numeric (def:arithmetic)", strict=True)
+def _check_pred(pred, entities=(), flavour=Flavour.DISCRETE):
+    validate(Module(
+        entities=list(entities),
+        requirements=[Requirement(id="R", flavour=flavour, entities=list(entities),
+                                  constraint=Always(inner=pred))],
+    ))
+
+
+def _check_expr(expr, entities=(), flavour=Flavour.DISCRETE):
+    _check_pred(Eq(expr, RealConst(value=0)), entities, flavour)
+
+
+def _check_stimulus(stim, entities=()):
+    validate(Module(entities=list(entities), test_cases=[TestCase(id="T", stimuli=[stim])]))
+
+
 @pytest.mark.parametrize(
     "build",
     [
-        pytest.param(lambda: Add(left=EntityRef(entity="sig"), right=RealConst(value=3)), id="add_entity_and_real"),
-        pytest.param(lambda: Mul(left=mkset(SIGNAL), right=RealConst(value=2)), id="mul_set_and_real"),
+        pytest.param(lambda: _check_expr(Add(left=EntityRef(entity="sig"), right=RealConst(value=3)), [SIGNAL]), id="add_entity_and_real"),
+        pytest.param(lambda: _check_expr(Mul(left=mkset(SIGNAL), right=RealConst(value=2)), [SIGNAL]), id="mul_set_and_real"),
     ],
 )
 def test_arithmetic_requires_numeric_operands(build):
-    with pytest.raises(ValidationError):
+    with pytest.raises(InvalidModule):
         build()
 
 
-@pytest.mark.xfail(reason="ordered comparison is not restricted to ordered domains (def:pred_cmp)", strict=True)
 @pytest.mark.parametrize(
     "build",
     [
-        pytest.param(lambda: Cmp(op=CmpOp.LT, lhs=mkset(SIGNAL), rhs=mkset(STORE)), id="lt_on_sets"),
-        pytest.param(lambda: Cmp(op=CmpOp.GT, lhs=EntityRef(entity="a"), rhs=EntityRef(entity="b")), id="gt_on_entities"),
+        pytest.param(lambda: _check_pred(Cmp(op=CmpOp.LT, lhs=mkset(SIGNAL), rhs=mkset(STORE)), [SIGNAL, STORE]), id="lt_on_sets"),
+        pytest.param(lambda: _check_pred(Cmp(op=CmpOp.GT, lhs=EntityRef(entity="sig"), rhs=EntityRef(entity="store")), [SIGNAL, STORE]), id="gt_on_entities"),
     ],
 )
 def test_ordered_comparison_requires_ordered_domain(build):
-    with pytest.raises(ValidationError):
+    with pytest.raises(InvalidModule):
         build()
 
 
-@pytest.mark.xfail(reason="set functions do not check their argument is a set (def:size, def:set_ops)", strict=True)
 @pytest.mark.parametrize(
     "build",
     [
-        pytest.param(lambda: Size(set=RealConst(value=3)), id="size_of_real"),
-        pytest.param(lambda: Union(left=RealConst(value=1), right=RealConst(value=2)), id="union_of_reals"),
-        pytest.param(lambda: Contains(value=RealConst(value=1), set=RealConst(value=2)), id="contains_in_real"),
+        pytest.param(lambda: _check_expr(Size(set=RealConst(value=3))), id="size_of_real"),
+        pytest.param(lambda: _check_expr(Union(left=RealConst(value=1), right=RealConst(value=2))), id="union_of_reals"),
+        pytest.param(lambda: _check_pred(Contains(value=RealConst(value=1), set=RealConst(value=2))), id="contains_in_real"),
     ],
 )
 def test_set_functions_require_set_operands(build):
-    with pytest.raises(ValidationError):
+    with pytest.raises(InvalidModule):
         build()
 
 
-@pytest.mark.xfail(reason="entity-type compatibility is not enforced (def:pred_happening, def:evt_occ_count)", strict=True)
 @pytest.mark.parametrize(
     "build",
     [
-        pytest.param(lambda: Happening(entity=SIGNAL, time=Now), id="happening_on_signal"),
-        pytest.param(lambda: EvtOccCount(event=SIGNAL, interval=SinceZero(time=Now)), id="evtocccount_on_signal"),
+        pytest.param(lambda: _check_pred(Happening(entity=SIGNAL, time=Now), [SIGNAL]), id="happening_on_signal"),
+        pytest.param(lambda: _check_expr(EvtOccCount(event=SIGNAL, interval=SinceZero(time=Now)), [SIGNAL]), id="evtocccount_on_signal"),
     ],
 )
 def test_event_predicates_require_event_entities(build):
-    with pytest.raises(ValidationError):
+    with pytest.raises(InvalidModule):
         build()
 
 
-@pytest.mark.xfail(reason="modifier accessors do not check entity type (def:modifier_accessors)", strict=True)
 @pytest.mark.parametrize(
     "build",
     [
-        pytest.param(lambda: Addr(entity=SIGNAL), id="addr_on_signal"),
-        pytest.param(lambda: EvtType(entity=STORE), id="evttype_on_storage"),
+        pytest.param(lambda: _check_expr(Addr(entity=SIGNAL), [SIGNAL]), id="addr_on_signal"),
+        pytest.param(lambda: _check_expr(EvtType(entity=STORE), [STORE]), id="evttype_on_storage"),
     ],
 )
 def test_modifier_accessor_requires_matching_entity_type(build):
-    with pytest.raises(ValidationError):
+    with pytest.raises(InvalidModule):
         build()
 
 
-@pytest.mark.xfail(reason="operation target entity type is not checked (operations table)", strict=True)
 @pytest.mark.parametrize(
     "build",
     [
-        pytest.param(lambda: Write(time=0, target=SIGNAL, expr=RealConst(value=1)), id="write_to_signal"),
-        pytest.param(lambda: Fire(time=0, target=SIGNAL), id="fire_non_trigger"),
+        pytest.param(lambda: _check_stimulus(Write(time=0, target=SIGNAL, expr=RealConst(value=1)), [SIGNAL]), id="write_to_signal"),
+        pytest.param(lambda: _check_stimulus(Fire(time=0, target=SIGNAL), [SIGNAL]), id="fire_non_trigger"),
     ],
 )
 def test_operation_requires_matching_target_type(build):
-    with pytest.raises(ValidationError):
+    with pytest.raises(InvalidModule):
         build()
 
 
-@pytest.mark.xfail(reason="discrete-only time functions are not rejected in continuous flavour (def:prev/next/reltime)", strict=True)
 def test_discrete_only_function_in_continuous_flavour_is_rejected():
-    with pytest.raises(ValidationError):
-        Requirement(
-            id="R", flavour=Flavour.CONTINUOUS, entities=[SIGNAL],
-            constraint=Always(inner=Eq(Val(entity=SIGNAL, time=Prev(time=Now)), RealConst(value=0))),
+    with pytest.raises(InvalidModule):
+        _check_pred(
+            Eq(Val(entity=SIGNAL, time=Prev(time=Now)), RealConst(value=0)),
+            [SIGNAL], flavour=Flavour.CONTINUOUS,
         )
+
+
+@pytest.mark.parametrize(
+    "build",
+    [
+        pytest.param(lambda: _check_pred(Happening(entity="ghost", time=Now)), id="entity_position"),
+        pytest.param(lambda: _check_expr(EntityRef(entity="ghost")), id="entity_ref_node"),
+        pytest.param(lambda: _check_stimulus(Fire(time=0, target="ghost")), id="stimulus_target"),
+    ],
+)
+def test_undeclared_entity_reference_is_rejected(build):
+    with pytest.raises(InvalidModule):
+        build()
+
+
+def test_well_typed_passes_validation():
+    # Sanity: well-typed constraints survive the validation pass.
+    _check_pred(Happening(entity=EVENT, time=Now), [EVENT])
+    _check_expr(Add(left=Val(entity=SIGNAL, time=Now), right=RealConst(value=3)), [SIGNAL])
+    _check_pred(Cmp(op=CmpOp.EQ, lhs=mkset(SIGNAL), rhs=mkset(SIGNAL)), [SIGNAL])

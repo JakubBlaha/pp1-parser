@@ -4,3 +4,4 @@ Re-exports the full DSL surface so callers can simply ``from verifier import *``
 """
 
 from .lib import *  # noqa: F401,F403
+from .validate import InvalidModule, validate  # noqa: F401

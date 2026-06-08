@@ -17,6 +17,8 @@ from pathlib import Path
 
 from pydantic import BaseModel, ValidationError
 
+from .validate import InvalidModule, validate
+
 
 def _exec_source(source: str, origin: str):
     """Execute DSL source in an isolated module namespace and return it."""
@@ -81,6 +83,13 @@ def main(argv=None) -> int:
             f"(wrap your requirement(s) in a Module)",
             file=sys.stderr,
         )
+        return 1
+
+    # Semantic validation against the formalism's type rules.
+    try:
+        validate(obj)
+    except InvalidModule as e:
+        print(f"invalid: {origin}:\n{e}", file=sys.stderr)
         return 1
 
     # Defensive re-validation: round-trip the canonical form back through the model.
