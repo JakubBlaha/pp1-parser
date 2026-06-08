@@ -973,6 +973,8 @@ def _lift_setup(v):
 class TestCase(Node):
     """A test case ``(setup, stimuli, assertions)`` (Def: test case)."""
 
+    __test__ = False  # not a pytest test class despite the ``Test`` prefix
+
     id: str
     setup: Annotated[dict[str, "ValueNode"], BeforeValidator(_lift_setup)] = Field(default_factory=dict)
     stimuli: list["StimulusNode"] = Field(default_factory=list)

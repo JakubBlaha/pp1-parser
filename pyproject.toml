@@ -9,8 +9,14 @@ description = "Logic-agnostic formalism DSL for software requirements and test c
 requires-python = ">=3.10"
 dependencies = ["pydantic>=2"]
 
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+
 [project.scripts]
 verifier = "verifier.cli:main"
 
 [tool.setuptools]
 packages = ["verifier"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
