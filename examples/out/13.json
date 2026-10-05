@@ -29,35 +29,35 @@
       }
     },
     {
-      "id": "ev_read_A",
+      "id": "ev_written_A",
       "type": "Event",
       "modifiers": {
         "target": "A",
-        "type": "read"
+        "type": "written"
       }
     },
     {
-      "id": "ev_read_B",
+      "id": "ev_written_B",
       "type": "Event",
       "modifiers": {
         "target": "B",
-        "type": "read"
+        "type": "written"
       }
     },
     {
-      "id": "ev_read_C",
+      "id": "ev_written_C",
       "type": "Event",
       "modifiers": {
         "target": "C",
-        "type": "read"
+        "type": "written"
       }
     },
     {
-      "id": "ev_read_D",
+      "id": "ev_written_D",
       "type": "Event",
       "modifiers": {
         "target": "D",
-        "type": "read"
+        "type": "written"
       }
     }
   ],
@@ -70,10 +70,10 @@
         "B",
         "C",
         "D",
-        "ev_read_A",
-        "ev_read_B",
-        "ev_read_C",
-        "ev_read_D"
+        "ev_written_A",
+        "ev_written_B",
+        "ev_written_C",
+        "ev_written_D"
       ],
       "constraint": {
         "node": "always",
@@ -86,19 +86,19 @@
               "elements": [
                 {
                   "node": "entity_ref",
-                  "entity": "ev_read_A"
+                  "entity": "ev_written_A"
                 },
                 {
                   "node": "entity_ref",
-                  "entity": "ev_read_B"
+                  "entity": "ev_written_B"
                 },
                 {
                   "node": "entity_ref",
-                  "entity": "ev_read_C"
+                  "entity": "ev_written_C"
                 },
                 {
                   "node": "entity_ref",
-                  "entity": "ev_read_D"
+                  "entity": "ev_written_D"
                 }
               ]
             },
@@ -147,7 +147,7 @@
                   "node": "cmp",
                   "op": ">",
                   "lhs": {
-                    "node": "val",
+                    "node": "val_after",
                     "entity": {
                       "node": "var",
                       "name": "x"
