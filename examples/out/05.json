@@ -119,7 +119,7 @@
                     "node": "cmp",
                     "op": "=",
                     "lhs": {
-                      "node": "val",
+                      "node": "val_after",
                       "entity": "R5",
                       "time": {
                         "node": "now"

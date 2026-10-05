@@ -15,7 +15,7 @@ its own:
   ``entities`` subset of ``E``).
 
 A sort is inferred for every expression; the polymorphic nodes whose sort cannot
-be known statically (``Val``, ``ValBefore``, ``MaxVal``, ``MinVal``, a bound
+be known statically (``Val``, ``ValAfter``, ``MaxVal``, ``MinVal``, a bound
 ``VarRef``) are treated as ``UNKNOWN`` and accepted everywhere, so the pass never
 rejects a *possibly* well-typed term.
 """
@@ -147,7 +147,7 @@ def expr_sort(n, ctx, errs) -> Sort:
         case EvtType():
             _require_entity(n.entity, {EntityType.EVENT}, ctx, errs, "EvtType")
             return Sort.LABEL
-        case Val() | ValBefore():
+        case Val() | ValAfter():
             _require_entity(n.entity, None, ctx, errs, type(n).__name__)
             _require(_NUMERICISH, n.time, ctx, errs, f"{type(n).__name__} time")
             return Sort.UNKNOWN

@@ -452,10 +452,16 @@ class Val(ExprMixin, Node):
     time: "ExprArg"
 
 
-class ValBefore(ExprMixin, Node):
-    """Left limit of the value of ``e`` at ``t`` (Def: value before time)."""
+class ValAfter(ExprMixin, Node):
+    """Value of ``e`` just after ``t`` (Def: value after time point).
 
-    node: Literal["val_before"] = "val_before"
+    ``Val(e, Next(t))`` in discrete time, the right limit in continuous time.
+    Effects of an operation fired at ``t`` hold on ``(t, t_next]``, so at a
+    firing time ``Val`` gives the value before the operation and ``ValAfter``
+    the value after it.
+    """
+
+    node: Literal["val_after"] = "val_after"
     entity: EntityArg
     time: "ExprArg"
 
@@ -903,7 +909,7 @@ ExprNode = Annotated[
         MkIntervalCC, MkIntervalOC, MkIntervalCO, MkIntervalOO, SinceZero,
         Start, End, IntervalDuration, IsLeftOpen, IsRightOpen,
         Addr, IsReg, IsNonVol, EvtTarget, EvtType,
-        Val, ValBefore, EvtOccCount, LastOcc, FirstOcc, MaxVal, MinVal,
+        Val, ValAfter, EvtOccCount, LastOcc, FirstOcc, MaxVal, MinVal,
         Size, Filter, Union, Intersection, Difference,
     ],
     Field(discriminator="node"),

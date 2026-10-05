@@ -64,16 +64,21 @@ requirement = Requirement(
 # A failure is fired on its EventTrigger; "entering emergency mode" is verified
 # as an assertion on the ``emergency_mode`` state. Negative cases assert that the
 # mode is *not* entered at the observation time.
+#
+# Except in TC1, the observation time is the time of the second failure. Under
+# the timing convention, a mode the software sets in response at ``t`` holds on
+# ``(t, t_next]``, so the assertions read ``ValAfter`` (just after ``t``), not
+# ``Val`` (which at ``t`` still gives the value before the response).
 
 
 def entered(t):
-    """Assertion predicate: emergency mode is entered at time ``t``."""
-    return Eq(Val(entity=emergency_mode, time=t), True)
+    """Assertion predicate: emergency mode is on just after time ``t``."""
+    return Eq(ValAfter(entity=emergency_mode, time=t), True)
 
 
 def not_entered(t):
-    """Assertion predicate: emergency mode is not entered at time ``t``."""
-    return Ne(Val(entity=emergency_mode, time=t), True)
+    """Assertion predicate: emergency mode is not on just after time ``t``."""
+    return Ne(ValAfter(entity=emergency_mode, time=t), True)
 
 
 test_cases = [

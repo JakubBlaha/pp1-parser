@@ -8,6 +8,8 @@ to ``d`` if ALL of:
 
 Note: ``valid_range`` is boolean; the toggle ``new = not old`` is encoded as the
 boolean-equivalent ``new != old`` (avoids a value-level negation expression).
+At a write time ``Val`` still gives the value before the write and ``ValAfter``
+the value written (timing convention: effects hold on ``(t, t_next]``).
 """
 
 from verifier import *
@@ -56,13 +58,13 @@ requirement = Requirement(
                 EvtOccCount(event=ev_written_d, interval=MkIntervalOC(start=t_mpd, end=Now)),
                 2,
             ),
-            Val(entity=d, time=Now) > Val(entity=d, time=t_prevd),
+            ValAfter(entity=d, time=Now) > ValAfter(entity=d, time=t_prevd),
         ]),
         effect=AllOf(items=[
             Happening(entity=ev_written_vr, time=Now),
             Ne(
+                ValAfter(entity=valid_range, time=Now),
                 Val(entity=valid_range, time=Now),
-                ValBefore(entity=valid_range, time=Now),
             ),
         ]),
         bound=500,

@@ -153,14 +153,14 @@
               "node": "cmp",
               "op": ">",
               "lhs": {
-                "node": "val",
+                "node": "val_after",
                 "entity": "d",
                 "time": {
                   "node": "now"
                 }
               },
               "rhs": {
-                "node": "val",
+                "node": "val_after",
                 "entity": "d",
                 "time": {
                   "node": "start",
@@ -191,14 +191,14 @@
               "node": "cmp",
               "op": "!=",
               "lhs": {
-                "node": "val",
+                "node": "val_after",
                 "entity": "valid_range",
                 "time": {
                   "node": "now"
                 }
               },
               "rhs": {
-                "node": "val_before",
+                "node": "val",
                 "entity": "valid_range",
                 "time": {
                   "node": "now"

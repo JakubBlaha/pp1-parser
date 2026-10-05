@@ -31,8 +31,8 @@ requirement = Requirement(
         Always(inner=Implies(
             antecedent=Happening(entity=ev_reset, time=Now),
             consequent=Eq(
-                Val(entity=MEASUREMT_BLOCK, time=Next(time=Now)),
-                ValBefore(entity=MEASUREMT_BLOCK, time=Now),
+                ValAfter(entity=MEASUREMT_BLOCK, time=Now),
+                Val(entity=MEASUREMT_BLOCK, time=Now),
             ),
         )),
     ]),

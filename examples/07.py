@@ -27,7 +27,7 @@ requirement = Requirement(
         cond=Happening(entity=ev_init_end, time=Now),
         effect=AllOf(items=[
             Happening(entity=ev_transmitted_modeset, time=Now),
-            Eq(Val(entity=MODESET_TOPIC, time=Now), True),
+            Eq(ValAfter(entity=MODESET_TOPIC, time=Now), True),
         ]),
     ),
 )

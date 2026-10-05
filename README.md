@@ -66,7 +66,7 @@ req = Requirement(
         cond=Happening(entity=ev_init_end, time=Now),
         effect=AllOf(items=[
             Happening(entity=ev_tx, time=Now),
-            Eq(Val(entity=modeset, time=Now), True),
+            Eq(ValAfter(entity=modeset, time=Now), True),
         ]),
     ),
 )

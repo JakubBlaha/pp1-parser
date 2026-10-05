@@ -75,17 +75,14 @@
                 "node": "cmp",
                 "op": "=",
                 "lhs": {
-                  "node": "val",
+                  "node": "val_after",
                   "entity": "MEASUREMT_BLOCK",
                   "time": {
-                    "node": "next",
-                    "time": {
-                      "node": "now"
-                    }
+                    "node": "now"
                   }
                 },
                 "rhs": {
-                  "node": "val_before",
+                  "node": "val",
                   "entity": "MEASUREMT_BLOCK",
                   "time": {
                     "node": "now"

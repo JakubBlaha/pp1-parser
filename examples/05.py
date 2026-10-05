@@ -48,7 +48,7 @@ requirement = Requirement(
             Happening(entity=ev_exception, time=Now),
             AllOf(items=[
                 Happening(entity=ev_written_r5, time=Now),
-                Eq(Val(entity=R5, time=Now), Val(entity=SRR0, time=Now)),
+                Eq(ValAfter(entity=R5, time=Now), Val(entity=SRR0, time=Now)),
             ]),
             Happening(entity=ev_invoke_ieh, time=Now),
         ]),

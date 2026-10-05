@@ -32,7 +32,7 @@ requirement = Requirement(
         AllOf(items=[
             Happening(entity=ev_written_dtscon, time=Now),
             Eq(
-                Val(entity=DTSCON, time=Now),
+                ValAfter(entity=DTSCON, time=Now),
                 Val(
                     entity=calibration_const,
                     time=Start(interval=LastOcc(event=ev_read_cc, time=Now, n=1)),
